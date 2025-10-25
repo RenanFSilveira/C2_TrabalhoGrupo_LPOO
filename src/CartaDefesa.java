@@ -5,7 +5,7 @@ public class CartaDefesa extends Carta {
     }
     
     @Override
-    public void jogar(Jogador jogadorDaVez, Jogador jogadorDefensor){
+    public void jogar(Jogador jogadorDaVez, Jogador inimigo){
         jogadorDaVez.defender(this.getPoder());
         Carta.cartasJogadas++;
     }

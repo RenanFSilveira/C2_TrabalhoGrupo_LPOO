@@ -11,11 +11,6 @@ public abstract class Carta {
         this.poder = poder;        
     }
 
-    public Carta() {
-        this.nome = "";
-        this.poder = 0;
-    }
-
     // Getts
     public String getNome() {
         return nome;

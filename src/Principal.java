@@ -7,15 +7,14 @@ public class Principal {
         ArrayList<Carta> baralho = new ArrayList<>();
 
         criaJogadoresECartas(jogadores, baralho);
-        statusParcial(jogadores, "INICIAL");
-        while (Carta.cartasJogadas < 30 && verificaVivos(jogadores) > 1) {
-            compraCartas(jogadores, baralho);
-        }
+        status(jogadores, "INICIAL");
+        iniciarJogo(jogadores, baralho);
+        statusFinal(jogadores);
     }
 
     public static void criaJogadoresECartas(ArrayList<Jogador> jogadores, ArrayList<Carta> baralho) {
-        jogadores.add(new Jogador("Joao", 2, 50));
-        jogadores.add(new Jogador("Maria", 2, 50));
+        jogadores.add(new Jogador("Joao"));
+        jogadores.add(new Jogador("Maria"));
 
         // Cartas de Ataque com poderes: 10, 20, 30, 40
         baralho.add(new CartaAtaque("Flecha", 10));
@@ -39,17 +38,86 @@ public class Principal {
         return jogadoresVivos;
     }
 
-    public static void statusParcial(ArrayList<Jogador> jogadores, String tipoStatus) {
-        System.out.println("=========== STATUS " + tipoStatus + " ===========");
+    public static void status(ArrayList<Jogador> jogadores, String tipoStatus) {
+        System.out.println("\n=========== STATUS " + tipoStatus + " ===========\n");
         for (Jogador jogador : jogadores) {
+
             System.out.println("Jogador: " + jogador.getNome() + "\nVida(s): " + jogador.getVida() + "\nEscudo: "
                     + jogador.getDefesa() + "\n");
         }
     }
 
-    public static void novaRodada(ArrayList<Jogador> jogadores, ArrayList<Carta> baralho) {
-        int numeroSorteado;
-        Random sorteadorRandom = new Random();
-        numeroSorteado = sorteadorRandom.nextInt(7);
+    public static void statusFinal(ArrayList<Jogador> jogadores) {
+        Jogador j1 = jogadores.get(0);
+        Jogador j2 = jogadores.get(1);
+        Jogador vencedor = null;
+        
+        System.out.println("=========== Fim Do Jogo ===========\n");
+
+        if (verificaVivos(jogadores) == 1) {
+            vencedor = j1.estaVivo() ? j1 : j2;
+        } else {
+            if (j1.getVida() > j2.getVida()) {
+                vencedor = j1;
+            } else if (j2.getVida() > j1.getVida()) {
+                vencedor = j2;
+            } else {
+                if (j1.getDefesa() > j2.getDefesa()) {
+                    vencedor = j1;
+                } else if (j2.getDefesa() > j1.getDefesa()) {
+                    vencedor = j2;
+                }
+            }
+        }
+        
+        System.out.println("Vencedor do jogo: " + (vencedor != null ? vencedor.getNome() : "Empate.")  + "\nTotal de cartas jogadas: " + Carta.cartasJogadas);
+
     }
+
+    public static void iniciarJogo(ArrayList<Jogador> jogadores, ArrayList<Carta> baralho) {
+        
+        Random sorteadorRandom = new Random();
+
+        Jogador j1 = jogadores.get(0);
+        Jogador j2 = jogadores.get(1);
+
+        int numeroSorteado;
+        Carta cartaSelecionada;
+
+        while (Carta.cartasJogadas < 30 && verificaVivos(jogadores) > 1) {
+
+            numeroSorteado = sorteadorRandom.nextInt(baralho.size());
+            cartaSelecionada = baralho.get(numeroSorteado);
+            if (cartaSelecionada instanceof CartaAtaque) {
+                System.out.println(j1.getNome() + " atacou " + j2.getNome() + " com a carta: ("
+                        + cartaSelecionada.getNome() + " | Poder: "
+                        + cartaSelecionada.getPoder() + ")");
+            } else {
+                System.out.println(j1.getNome() + " se curou com a carta: (" + cartaSelecionada.getNome() + " | Poder: "
+                        + cartaSelecionada.getPoder() + ")");
+            }
+
+            cartaSelecionada.jogar(j1, j2);
+
+            if (j2.estaVivo()) {
+                numeroSorteado = sorteadorRandom.nextInt(baralho.size());
+                cartaSelecionada = baralho.get(numeroSorteado);
+                if (cartaSelecionada instanceof CartaAtaque) {
+                    System.out.println(j2.getNome() + " atacou " + j1.getNome() + " com a carta: ("
+                            + cartaSelecionada.getNome() + " | Poder: "
+                            + cartaSelecionada.getPoder() + ")");
+                } else {
+                    System.out.println(j2.getNome() + " se curou com a carta: (" + cartaSelecionada.getNome() + " | Poder: "
+                                    + cartaSelecionada.getPoder() + ")");
+                }
+                cartaSelecionada.jogar(j2, j1);
+
+            } else {
+                System.out.println(j2.getNome() + " não jogou pois ela está morta.");
+            }
+            status(jogadores, "PARCIAL");
+        }
+
+    }
+
 }

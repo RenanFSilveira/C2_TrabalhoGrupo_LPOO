@@ -5,8 +5,8 @@ public class CartaAtaque extends Carta {
     }
 
     @Override
-    public void jogar(Jogador jogadorDaVez, Jogador jogadorDefensor){
-        jogadorDefensor.atacar(this.getPoder());
+    public void jogar(Jogador jogadorDaVez, Jogador inimigo){
+        inimigo.atacar(this.getPoder());
         Carta.cartasJogadas++;
         
     }
